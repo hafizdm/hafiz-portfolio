@@ -1,9 +1,17 @@
-"use client";
-
+import Link from "next/link";
+import { client } from "@/sanity/lib/client";
+import { featuredProjectsQuery } from "@/sanity/lib/queries";
 import Image from "next/image";
 
-export default function Home() {
+export default async function Home() {
+  const featuredProjects = await client.fetch(featuredProjectsQuery);
+
+  console.log("FEATURED PROJECTS:", featuredProjects);
+
+  
+
   return (
+      
     <main className="min-h-screen bg-[#f5f5f3] text-[#111111]">
 
             {/* ================= HERO ================= */}
@@ -535,6 +543,7 @@ export default function Home() {
           </div>
         </section>
 
+      
         {/* ================= PROJECTS ================= */}
         <section
           id="projects"
@@ -562,30 +571,30 @@ export default function Home() {
                 </p>
 
                 {/* VIEW ALL PROJECT BUTTON */}
-                  <a
-                    href="/projects"
-                    className="group mt-8 inline-flex items-center gap-4 rounded-full bg-black px-6 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-lg"
-                  >
-                    <span>
-                      View All Projects
-                    </span>
+                <Link
+                  href="/projects"
+                  className="group mt-8 inline-flex items-center gap-4 rounded-full bg-black px-6 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-lg"
+                >
+                  <span>
+                    View All Projects
+                  </span>
 
-                    {/* ARROW */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                      />
-                    </svg>
-                  </a>
+                  {/* ARROW */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </Link>
 
               </div>
 
@@ -596,234 +605,118 @@ export default function Home() {
                 {/* HORIZONTAL SCROLL */}
                 <div className="flex gap-5 overflow-x-auto pb-6 pr-6 scrollbar-hide">
 
-                  {/* PROJECT 01 */}
-                  <div className="group min-w-[280px] max-w-[280px] overflow-hidden rounded-3xl bg-[#1a1a1a] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl sm:min-w-[310px] sm:max-w-[310px]">
+                  {featuredProjects.map((project: any) => (
 
-                    {/* PROJECT IMAGE */}
-                    <div className="relative h-[220px] overflow-hidden bg-gray-800">
+                    <Link
+                      key={project._id}
+                      href={
+                        project.slug?.current
+                          ? `/projects/${project.slug.current}`
+                          : "/projects"
+                      }
+                      className="group min-w-[280px] max-w-[280px] overflow-hidden rounded-3xl bg-[#1a1a1a] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl sm:min-w-[310px] sm:max-w-[310px]"
+                    >
 
-                      <div className="absolute inset-0 flex items-center justify-center">
+                      {/* ================= PROJECT IMAGE ================= */}
+                      <div className="relative h-[220px] overflow-hidden bg-gray-800">
 
-                        <div className="text-center">
-                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                            Project 01
+                        {/* SANITY IMAGE */}
+                        {project.thumbnail ? (
+                          <Image
+                            src={project.thumbnail}
+                            alt={project.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          /* FALLBACK */
+                          <div className="absolute inset-0 flex items-center justify-center">
+
+                            <div className="text-center">
+
+                              <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+                                Featured Project
+                              </p>
+
+                              <p className="mt-3 text-3xl font-bold">
+                                {project.title}
+                              </p>
+
+                            </div>
+
+                          </div>
+                        )}
+
+                      </div>
+
+
+                      {/* ================= PROJECT CONTENT ================= */}
+                      <div className="p-6">
+
+                        {/* CATEGORY */}
+                        {project.category && (
+                          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                            {project.category}
                           </p>
+                        )}
 
-                          <p className="mt-3 text-3xl font-bold">
-                            RIISA
+
+                        {/* TITLE */}
+                        <h3 className="mt-3 text-xl font-semibold">
+                          {project.title}
+                        </h3>
+
+
+                        {/* DESCRIPTION */}
+                        {project.shortDescription && (
+                          <p className="mt-3 text-sm leading-6 text-gray-400">
+                            {project.shortDescription}
                           </p>
+                        )}
+
+
+                        {/* TECHNOLOGIES */}
+                        {project.technologies &&
+                          project.technologies.length > 0 && (
+
+                            <div className="mt-5 flex flex-wrap gap-2">
+
+                              {project.technologies
+                                .slice(0, 3)
+                                .map((technology: string) => (
+
+                                  <span
+                                    key={technology}
+                                    className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300"
+                                  >
+                                    {technology}
+                                  </span>
+
+                                ))}
+
+                            </div>
+
+                          )}
+
+
+                        {/* VIEW PROJECT */}
+                        <div className="mt-6 flex items-center text-sm font-medium text-white">
+
+                          <span>
+                            View Project
+                          </span>
+
+                          <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1.5">
+                            →
+                          </span>
+
                         </div>
 
                       </div>
 
-                    </div>
+                    </Link>
 
-                    {/* PROJECT CONTENT */}
-                    <div className="p-6">
-
-                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                        Web Application
-                      </p>
-
-                      <h3 className="mt-3 text-xl font-semibold">
-                        RIISA
-                      </h3>
-
-                      <p className="mt-3 text-sm leading-6 text-gray-400">
-                        Internal business application developed to support
-                        operational processes and company requirements.
-                      </p>
-
-                      <div className="mt-5 flex flex-wrap gap-2">
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          PHP
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Laravel
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          MySQL
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* PROJECT 02 */}
-                  <div className="group min-w-[280px] max-w-[280px] overflow-hidden rounded-3xl bg-[#1a1a1a] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl sm:min-w-[310px] sm:max-w-[310px]">
-
-                    <div className="relative h-[220px] overflow-hidden bg-gray-800">
-
-                      <div className="absolute inset-0 flex items-center justify-center">
-
-                        <div className="text-center">
-                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                            Project 02
-                          </p>
-
-                          <p className="mt-3 text-3xl font-bold">
-                            TRAVEL
-                          </p>
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                    <div className="p-6">
-
-                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                        Process Automation
-                      </p>
-
-                      <h3 className="mt-3 text-xl font-semibold">
-                        Travel Automation
-                      </h3>
-
-                      <p className="mt-3 text-sm leading-6 text-gray-400">
-                        Automated travel request, approval, vendor communication,
-                        and passenger document workflows.
-                      </p>
-
-                      <div className="mt-5 flex flex-wrap gap-2">
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Power Apps
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Power Automate
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          SharePoint
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* PROJECT 03 */}
-                  <div className="group min-w-[280px] max-w-[280px] overflow-hidden rounded-3xl bg-[#1a1a1a] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl sm:min-w-[310px] sm:max-w-[310px]">
-
-                    <div className="relative h-[220px] overflow-hidden bg-gray-800">
-
-                      <div className="absolute inset-0 flex items-center justify-center">
-
-                        <div className="text-center">
-                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                            Project 03
-                          </p>
-
-                          <p className="mt-3 text-3xl font-bold">
-                            SPD
-                          </p>
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                    <div className="p-6">
-
-                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                        Business Application
-                      </p>
-
-                      <h3 className="mt-3 text-xl font-semibold">
-                        SPD & Timesheet
-                      </h3>
-
-                      <p className="mt-3 text-sm leading-6 text-gray-400">
-                        Digital workflow for SPD and timesheet processes,
-                        including approval, finance, and payment stages.
-                      </p>
-
-                      <div className="mt-5 flex flex-wrap gap-2">
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Power Apps
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          SharePoint
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Workflow
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* PROJECT 04 */}
-                  <div className="group min-w-[280px] max-w-[280px] overflow-hidden rounded-3xl bg-[#1a1a1a] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl sm:min-w-[310px] sm:max-w-[310px]">
-
-                    <div className="relative h-[220px] overflow-hidden bg-gray-800">
-
-                      <div className="absolute inset-0 flex items-center justify-center">
-
-                        <div className="text-center">
-                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                            Project 04
-                          </p>
-
-                          <p className="mt-3 text-3xl font-bold">
-                            ROTATION
-                          </p>
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                    <div className="p-6">
-
-                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                        Workforce System
-                      </p>
-
-                      <h3 className="mt-3 text-xl font-semibold">
-                        Rotation System
-                      </h3>
-
-                      <p className="mt-3 text-sm leading-6 text-gray-400">
-                        System for managing employee site mobilization,
-                        project assignments, and rotation schedules.
-                      </p>
-
-                      <div className="mt-5 flex flex-wrap gap-2">
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Power Apps
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          SharePoint
-                        </span>
-
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-gray-300">
-                          Automation
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </div>
+                  ))}
 
                 </div>
 
@@ -834,8 +727,7 @@ export default function Home() {
           </div>
         </section>
 
-
-              {/* ================= CONTACT ================= */}
+        {/* ================= CONTACT ================= */}
         <section
           id="contact"
           className="bg-[#1a1a1a] text-white"
