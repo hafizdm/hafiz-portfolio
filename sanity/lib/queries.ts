@@ -7,7 +7,7 @@ export const projectsQuery = `
     shortDescription,
     "category": category->title,
     technologies,
-    thumbnail,
+    "thumbnail": thumbnail.asset->url,
     year,
     projectUrl,
     githubUrl,
@@ -28,7 +28,7 @@ export const featuredProjectsQuery = `
     shortDescription,
     "category": category->title,
     technologies,
-    thumbnail,
+    "thumbnail": thumbnail.asset->url,
     year,
     featured
   }

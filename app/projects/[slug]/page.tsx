@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { PortableText } from "@portabletext/react";
 
 import { client } from "@/sanity/lib/client";
@@ -21,7 +22,7 @@ const projectQuery = `
     technologies,
     features,
     role,
-    thumbnail,
+    "thumbnail": thumbnail.asset->url,
     gallery,
     year,
     projectUrl,
@@ -34,6 +35,8 @@ type Project = {
   _id: string;
 
   title: string;
+
+  thumbnail?: string;
 
   slug?: {
     current: string;
@@ -78,6 +81,9 @@ export default async function ProjectDetailPage({ params }: Props) {
     { slug }
   );
 
+  console.log("PROJECT DETAIL:", project);
+  console.log("PROJECT THUMBNAIL:", project?.thumbnail);
+
   if (!project) {
     notFound();
   }
@@ -95,10 +101,16 @@ export default async function ProjectDetailPage({ params }: Props) {
         {/* Back Button */}
 
         <Link
-        href="/projects"
-        className="mb-12 inline-flex items-center text-sm text-neutral-500 transition hover:text-black"
-        >
-        ← Back to Projects
+            href="/projects"
+            className="group mb-12 inline-flex items-center gap-2 rounded-full bg-black px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-lg"
+            >
+            <span className="transition-transform duration-300 group-hover:-translate-x-1">
+                ←
+            </span>
+
+            <span>
+                Back to Projects
+            </span>
         </Link>
 
         {/* Hero Content */}
@@ -165,17 +177,29 @@ export default async function ProjectDetailPage({ params }: Props) {
     ========================================================= */}
 
     <section className="px-6 pb-24 md:px-12 lg:px-20">
-    <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-7xl">
 
-        <div className="relative flex aspect-[16/9] items-center justify-center overflow-hidden rounded-3xl bg-neutral-900">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-3xl bg-neutral-900">
 
-        <span className="text-sm uppercase tracking-[0.3em] text-neutral-600">
-            Project Preview
-        </span>
+            {project.thumbnail ? (
+                <Image
+                src={project.thumbnail}
+                alt={project.title}
+                fill
+                priority
+                className="object-cover"
+                />
+            ) : (
+                <div className="flex h-full items-center justify-center">
+                <span className="text-sm uppercase tracking-[0.3em] text-neutral-600">
+                    Project Preview
+                </span>
+                </div>
+            )}
+
+            </div>
 
         </div>
-
-    </div>
     </section>
 
 

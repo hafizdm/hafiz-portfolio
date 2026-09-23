@@ -4,6 +4,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import { client } from "@/sanity/lib/client";
 import { projectsQuery } from "@/sanity/lib/queries";
@@ -11,6 +12,7 @@ import { projectsQuery } from "@/sanity/lib/queries";
 type Project = {
   _id: string;
   title: string;
+  thumbnail?: string;
   slug?: {
     current: string;
   };
@@ -152,16 +154,23 @@ export default function ProjectsPage() {
                   className="group overflow-hidden rounded-3xl border border-black/[0.08] bg-white transition duration-500 hover:-translate-y-1 hover:border-black/[0.15]"
                 >
 
-                  {/* ================= IMAGE PLACEHOLDER ================= */}
+                  {/* ================= PROJECT IMAGE ================= */}
                   <div className="relative aspect-[16/10] overflow-hidden bg-neutral-900">
 
-                    <div className="flex h-full items-center justify-center">
-
-                      <span className="text-sm uppercase tracking-[0.25em] text-neutral-600">
-                        Project Preview
-                      </span>
-
-                    </div>
+                    {project.thumbnail ? (
+                      <Image
+                        src={project.thumbnail}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center">
+                        <span className="text-sm uppercase tracking-[0.25em] text-neutral-600">
+                          Project Preview
+                        </span>
+                      </div>
+                    )}
 
                   </div>
 
