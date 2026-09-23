@@ -1,7 +1,7 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,10 +32,17 @@ export default function Navbar() {
         {/* Logo */}
         <a
           href="/#home"
-          className="text-xl font-bold tracking-tight transition-colors duration-300"
+          className="relative flex items-center"
           onClick={() => setMenuOpen(false)}
         >
-          HAFIZDM
+          <Image
+            src={scrolled ? "/logo-white.png" : "/logo-black.png"}
+            alt="Hafizd Muhammad"
+            width={120}
+            height={40}
+            className="h-auto w-[150px]"
+            priority
+          />
         </a>
 
         {/* Desktop Navigation */}
