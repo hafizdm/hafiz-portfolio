@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Hafizd Muhammad | IT Specialist & System Analyst",
   description:
     "Personal portfolio of Hafizd Muhammad, IT Specialist & System Analyst.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
