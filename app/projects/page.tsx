@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -29,6 +27,9 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const projectsPerPage = 4;
 
   useEffect(() => {
     async function fetchProjects() {
@@ -58,6 +59,19 @@ export default function ProjectsPage() {
       : projects.filter(
           (project) => project.category === activeCategory
         );
+
+  // ================= PAGINATION =================
+
+  const totalPages = Math.ceil(
+    filteredProjects.length / projectsPerPage
+  );
+
+  const startIndex = (currentPage - 1) * projectsPerPage;
+
+  const paginatedProjects = filteredProjects.slice(
+    startIndex,
+    startIndex + projectsPerPage
+  );
 
   return (
     <main className="min-h-screen bg-[#f5f5f3] text-neutral-900">
@@ -103,7 +117,10 @@ export default function ProjectsPage() {
 
               <button
                 key={category}
-                onClick={() => setActiveCategory(category)}
+                onClick={() => {
+                  setActiveCategory(category);
+                  setCurrentPage(1);
+                }}
                 className={`rounded-full border px-5 py-2.5 text-sm transition ${
                   activeCategory === category
                     ? "border-black bg-black text-white"
@@ -145,118 +162,160 @@ export default function ProjectsPage() {
           {/* ================= PROJECT GRID ================= */}
           {!loading && filteredProjects.length > 0 && (
 
-            <div className="grid gap-8 md:grid-cols-2">
+            <>
 
-              {filteredProjects.map((project) => (
+              <div className="grid gap-8 md:grid-cols-2">
 
-                <article
-                  key={project._id}
-                  className="group overflow-hidden rounded-3xl border border-black/[0.08] bg-white transition duration-500 hover:-translate-y-1 hover:border-black/[0.15]"
-                >
+                {paginatedProjects.map((project) => (
 
-                  {/* ================= PROJECT IMAGE ================= */}
-                  <div className="relative aspect-[16/10] overflow-hidden bg-neutral-900">
+                  <article
+                    key={project._id}
+                    className="group overflow-hidden rounded-3xl border border-black/[0.08] bg-white transition duration-500 hover:-translate-y-1 hover:border-black/[0.15]"
+                  >
 
-                    {project.thumbnail ? (
-                      <Image
-                        src={project.thumbnail}
-                        alt={project.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <span className="text-sm uppercase tracking-[0.25em] text-neutral-600">
-                          Project Preview
-                        </span>
-                      </div>
-                    )}
+                    {/* ================= PROJECT IMAGE ================= */}
+                    <div className="relative aspect-[16/10] overflow-hidden bg-neutral-900">
 
-                  </div>
-
-
-                  {/* ================= CONTENT ================= */}
-                  <div className="p-7 md:p-8">
-
-                    <div className="mb-4 flex items-center justify-between">
-
-                      <span className="text-xs font-medium uppercase tracking-[0.2em] text-black">
-                        {project.category}
-                      </span>
-
-                      <span className="text-neutral-500 transition duration-300 group-hover:translate-x-1 group-hover:text-black">
-                        ↗
-                      </span>
+                      {project.thumbnail ? (
+                        <Image
+                          src={project.thumbnail}
+                          alt={project.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <span className="text-sm uppercase tracking-[0.25em] text-neutral-600">
+                            Project Preview
+                          </span>
+                        </div>
+                      )}
 
                     </div>
 
 
-                    {/* TITLE */}
-                    <h2 className="text-2xl font-medium tracking-tight text-neutral-900">
-                      {project.title}
-                    </h2>
+                    {/* ================= CONTENT ================= */}
+                    <div className="p-7 md:p-8">
+
+                      <div className="mb-4 flex items-center justify-between">
+
+                        <span className="text-xs font-medium uppercase tracking-[0.2em] text-black">
+                          {project.category}
+                        </span>
+
+                        <span className="text-neutral-500 transition duration-300 group-hover:translate-x-1 group-hover:text-black">
+                          ↗
+                        </span>
+
+                      </div>
 
 
-                    {/* DESCRIPTION */}
-                    <p className="mt-4 text-sm leading-6 text-neutral-500">
-                      {project.shortDescription}
-                    </p>
+                      {/* TITLE */}
+                      <h2 className="text-2xl font-medium tracking-tight text-neutral-900">
+                        {project.title}
+                      </h2>
 
 
-                    {/* TECHNOLOGIES */}
-                    {project.technologies &&
-                      project.technologies.length > 0 && (
+                      {/* DESCRIPTION */}
+                      <p className="mt-4 text-sm leading-6 text-neutral-500">
+                        {project.shortDescription}
+                      </p>
 
-                        <div className="mt-6 flex flex-wrap gap-2">
 
-                          {project.technologies.map((technology) => (
+                      {/* TECHNOLOGIES */}
+                      {project.technologies &&
+                        project.technologies.length > 0 && (
 
-                            <span
-                              key={technology}
-                              className="rounded-full border border-black/10 px-3 py-1.5 text-xs text-neutral-500"
-                            >
-                              {technology}
+                          <div className="mt-6 flex flex-wrap gap-2">
+
+                            {project.technologies.map((technology) => (
+
+                              <span
+                                key={technology}
+                                className="rounded-full border border-black/10 px-3 py-1.5 text-xs text-neutral-500"
+                              >
+                                {technology}
+                              </span>
+
+                            ))}
+
+                          </div>
+
+                        )}
+
+
+                      {/* ================= BUTTON ================= */}
+                      <div className="mt-7 border-t border-black/10 pt-5">
+
+                        {project.slug?.current ? (
+
+                          <Link
+                            href={`/projects/${project.slug.current}`}
+                            className="inline-flex items-center text-sm font-medium text-black transition hover:text-neutral-600"
+                          >
+                            View Project
+
+                            <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
+                              →
                             </span>
 
-                          ))}
+                          </Link>
 
-                        </div>
+                        ) : (
 
-                      )}
-
-
-                    {/* ================= BUTTON ================= */}
-                    <div className="mt-7 border-t border-black/10 pt-5">
-
-                      {project.slug?.current ? (
-
-                        <Link
-                          href={`/projects/${project.slug.current}`}
-                          className="inline-flex items-center text-sm font-medium text-black transition hover:text-neutral-600"
-                        >
-                          View Project
-                          <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
-                            →
+                          <span className="text-sm font-medium text-neutral-400">
+                            View Project →
                           </span>
-                        </Link>
 
-                      ) : (
+                        )}
 
-                        <span className="text-sm font-medium text-neutral-400">
-                          View Project →
-                        </span>
-
-                      )}
+                      </div>
 
                     </div>
 
-                  </div>
+                  </article>
 
-                </article>
+                ))}
 
-              ))}
+              </div>
 
-            </div>
+
+              {/* ================= PAGINATION ================= */}
+              {totalPages > 1 && (
+
+                <div className="mt-12 flex items-center justify-center gap-3">
+
+                  <button
+                    onClick={() =>
+                      setCurrentPage((page) => page - 1)
+                    }
+                    disabled={currentPage === 1}
+                    className="rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-black/30 hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    ← Previous
+                  </button>
+
+
+                  <span className="px-3 text-sm text-neutral-500">
+                    {currentPage} / {totalPages}
+                  </span>
+
+
+                  <button
+                    onClick={() =>
+                      setCurrentPage((page) => page + 1)
+                    }
+                    disabled={currentPage === totalPages}
+                    className="rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-black/30 hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    Next →
+                  </button>
+
+                </div>
+
+              )}
+
+            </>
 
           )}
 
@@ -396,6 +455,7 @@ export default function ProjectsPage() {
                       strokeLinejoin="round"
                       d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
                     />
+
                   </svg>
 
                 </div>
