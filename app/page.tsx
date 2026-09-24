@@ -252,8 +252,9 @@ export default async function Home() {
                 <div className="mt-10">
 
                   <a
-                    href="/Hafiz-Muhammad-Alison-CV.pdf"
-                    download
+                    href="/cv-hafizd-muhammad-updated.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-3 rounded-full bg-black px-7 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-lg"
                   >
 
