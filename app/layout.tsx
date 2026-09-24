@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hafizd Muhammad | IT Specialist & System Analyst",
+  title: "Hafizd Muhammad | IT & Digital Solutions",
   description:
-    "Personal portfolio of Hafizd Muhammad, IT Specialist & System Analyst.",
+    "Personal portfolio of Hafizd Muhammad, an IT Professional with experience in IT support, system analysis, and business process automation.",
   icons: {
     icon: "/icon.png",
   },

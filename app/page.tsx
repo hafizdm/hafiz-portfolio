@@ -46,7 +46,7 @@ export default async function Home() {
                       IT Specialist
                       <br />
                       <span className="text-gray-400">
-                        &amp; System Analyst
+                        &amp; Systems & Digital Solutions
                       </span>
                     </h2>
                   </div>
